@@ -1,125 +1,41 @@
-# @arraypress/waveform-playlist-svelte
+<div align="center">
 
-Svelte 5 component wrapper around [`@arraypress/waveform-playlist`](https://github.com/arraypress/waveform-playlist). Declarative `tracks` (with chapters + markers), typed props for every playlist + player option, and an exported imperative navigation API (`selectTrack() / nextTrack() / previousTrack()`).
+# Waveform Playlist for Svelte
 
-The core library stays a zero-dependency vanilla-JS package that works anywhere a `<script>` tag does. This package adds the framework-native ergonomics Svelte developers expect — built with runes.
+**Svelte 5 component wrapper for `@arraypress/waveform-playlist`.**
+Declarative `tracks`, typed props for every option, and an exported imperative navigation API.
 
-```svelte
-<script lang="ts">
-  import { WaveformPlaylist } from '@arraypress/waveform-playlist-svelte';
+[![npm version](https://img.shields.io/npm/v/@arraypress/waveform-playlist-svelte?style=flat-square&labelColor=09090b&color=3f3f46)](https://www.npmjs.com/package/@arraypress/waveform-playlist-svelte)
+[![license](https://img.shields.io/npm/l/@arraypress/waveform-playlist-svelte?style=flat-square&labelColor=09090b&color=3f3f46)](https://github.com/arraypress)
 
-  const tracks = [
-    { url: '/audio/a.mp3', title: 'Track A' },
-    { url: '/audio/b.mp3', title: 'Track B' },
-  ];
-</script>
+**[Documentation](https://docs.waveformplayer.com/)** · [npm](https://www.npmjs.com/package/@arraypress/waveform-playlist-svelte)
 
-<WaveformPlaylist {tracks} />
-```
+</div>
 
-## Installation
+---
+
+## Install
 
 ```bash
 npm install @arraypress/waveform-playlist-svelte @arraypress/waveform-playlist @arraypress/waveform-player svelte
 ```
 
-`svelte` (^5), `@arraypress/waveform-playlist` (^1.3), and `@arraypress/waveform-player` (^1.8) are peer dependencies.
-
-## Setup
-
-Import both cores' CSS **once** in your app entry, and ensure the core player is loaded (the playlist instantiates `window.WaveformPlayer` for the active track):
-
-```ts
-import '@arraypress/waveform-player';                              // registers window.WaveformPlayer
-import '@arraypress/waveform-player/dist/waveform-player.css';
-import '@arraypress/waveform-playlist/dist/waveform-playlist.css';
-```
-
-The wrapper does **not** import CSS for you. The playlist's JS is loaded dynamically inside a `$effect` (browser-only), so SSR / SvelteKit prerendering doesn't trip over the browser-only audio APIs.
-
-## Usage
-
-### Tracks with metadata + chapters
-
-```svelte
-<script lang="ts">
-  import { WaveformPlaylist, type WaveformPlaylistTrackInput } from '@arraypress/waveform-playlist-svelte';
-
-  const tracks: WaveformPlaylistTrackInput[] = [
-    {
-      url: '/audio/episode-1.mp3',
-      title: 'Episode 1',
-      artist: 'The Pilot',
-      artwork: '/img/ep1.jpg',
-      duration: '42:10',
-      chapters: [
-        { time: 0, label: 'Cold open' },
-        { time: 90, label: 'Main topic', color: '#a855f7' },
-        { time: '38:00', label: 'Wrap-up' },
-      ],
-    },
-    { url: '/audio/episode-2.mp3', title: 'Episode 2' },
-  ];
-</script>
-
-<WaveformPlaylist {tracks} layout="list" continuous showDuration />
-```
-
-> **Naming note.** `class`, `style`, `id`, and other element attributes fall through to the host element; the base class `wfp-host` is always applied. The visual style is `waveformStyle`.
-
-### Imperative navigation via bind:this
-
 ```svelte
 <script lang="ts">
   import { WaveformPlaylist } from '@arraypress/waveform-playlist-svelte';
-  let playlist: WaveformPlaylist;
 </script>
 
-<WaveformPlaylist bind:this={playlist} {tracks} />
-<button onclick={() => playlist.previousTrack()}>Prev</button>
-<button onclick={() => playlist.nextTrack()}>Next</button>
-<button onclick={() => playlist.selectTrack(2)}>Track 3</button>
+<WaveformPlaylist tracks={[{ url: '/a.mp3', title: 'A', artist: 'Artist' }]} />
 ```
 
-The exported methods (`selectTrack()`, `seekToChapter()`, `nextTrack()`, `previousTrack()`, `getPlayer()`, `getCurrentTrackIndex()`, `getTracks()`) pass straight through to the underlying instance. `playlist.getInstance()` returns the raw instance.
+## Documentation
 
-## How it works
+Every prop, the imperative API, and SSR notes live in the docs.
 
-Tracks are rendered declaratively into the `[data-track]` / `[data-chapter]` markup the `WaveformPlaylist` constructor parses on mount — the same contract the vanilla library uses. When any construction prop changes (a serialised `tracks` change, `layout`, options, …), the wrapper destroys the instance and rebuilds it over the freshly-rendered markup.
+### -> [docs.waveformplayer.com](https://docs.waveformplayer.com/)
 
-There are **no lifecycle callbacks** — the playlist owns the embedded player's callbacks internally to drive continuous playback and chapter tracking. Observe playback via the embedded player from `getPlayer()`.
-
-## Props
-
-Every playlist option and forwarded player option is a typed prop; absent props are not forwarded, so the cores' own defaults apply. See [`src/lib/types.ts`](./src/lib/types.ts). Highlights: `tracks` (required), `layout`, `continuous`, `expandChapters`, `showDuration`, `showChapterMarkers`, `chapterMarkerColor`, `showPlayState`, plus the player surface (`waveformStyle`, `height`, `samples`, `barWidth`, `colorPreset`, colours, `playbackRate`, `showControls`, `showInfo`, `showTime`, `showBPM`, `accessibleSeek`, …).
-
-## TypeScript
-
-```ts
-import type {
-  WaveformPlaylistProps,
-  WaveformPlaylistExpose,
-  WaveformPlaylistTrackInput,
-  WaveformPlaylistChapterInput,
-  WaveformPlaylistOptions,
-  WaveformPlaylistTrack,
-  WaveformStyle,
-  ColorPreset,
-} from '@arraypress/waveform-playlist-svelte';
-```
-
-Types are re-exported straight from the cores, so they can never drift. The package ships `.svelte` + `.d.ts` (generated by `svelte-package`).
-
-## Testing
-
-```bash
-npm test          # one-shot
-npm run typecheck  # svelte-check
-npm run build      # svelte-package → dist/
-```
-
-The core library is mocked at the module boundary (jsdom has no Web Audio API).
+[Svelte guide](https://docs.waveformplayer.com/frameworks/svelte/) — install, props, the imperative API, and SSR notes. All four Svelte wrappers (player / bar / playlist) are on that page.
 
 ## License
 
-MIT © ArrayPress
+MIT © [ArrayPress](https://github.com/arraypress)
