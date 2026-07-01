@@ -49,7 +49,7 @@ The wrapper does **not** import CSS for you. The playlist's JS is loaded dynamic
     {
       url: '/audio/episode-1.mp3',
       title: 'Episode 1',
-      subtitle: 'The Pilot',
+      artist: 'The Pilot',
       artwork: '/img/ep1.jpg',
       duration: '42:10',
       chapters: [

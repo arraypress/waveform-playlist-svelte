@@ -318,7 +318,7 @@
 			data-track=""
 			data-url={track.url}
 			data-title={track.title}
-			data-subtitle={track.subtitle}
+			data-artist={track.artist}
 			data-artwork={track.artwork}
 			data-album={track.album}
 			data-duration={track.duration}
