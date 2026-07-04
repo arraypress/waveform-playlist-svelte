@@ -105,6 +105,12 @@
 		// ── Accessibility ──────────────────────────────────────────────
 		accessibleSeek,
 		seekLabel,
+		seekValueText,
+		playPauseLabel,
+		speedLabel,
+		// ── Metadata / text ────────────────────────────────────────────
+		artworkAlt,
+		unknownTrackText,
 		// ── Error UI ───────────────────────────────────────────────────
 		errorText,
 		// ── Markers (render toggle; per-track data comes from `tracks`) ─
@@ -186,6 +192,12 @@
 
 		set('accessibleSeek', accessibleSeek);
 		set('seekLabel', seekLabel);
+		set('seekValueText', seekValueText);
+		set('playPauseLabel', playPauseLabel);
+		set('speedLabel', speedLabel);
+
+		set('artworkAlt', artworkAlt);
+		set('unknownTrackText', unknownTrackText);
 
 		set('errorText', errorText);
 
