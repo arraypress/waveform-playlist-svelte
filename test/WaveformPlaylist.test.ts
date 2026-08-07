@@ -92,11 +92,23 @@ describe('WaveformPlaylist (Svelte)', () => {
 		expect('tracks' in instances[0].opts).toBe(false);
 	});
 
+	it('forwards the audio-loading options (preload, crossOrigin)', async () => {
+		render(WaveformPlaylist, {
+			props: { tracks: tracksA, preload: 'metadata', crossOrigin: 'anonymous' },
+		});
+		await firstInstance();
+		expect(instances[0].opts).toMatchObject({
+			preload: 'metadata',
+			crossOrigin: 'anonymous',
+		});
+	});
+
 	it('omits absent props so the core defaults win', async () => {
 		render(WaveformPlaylist, { props: { tracks: tracksA } });
 		await firstInstance();
 		expect('continuous' in instances[0].opts).toBe(false);
 		expect('showControls' in instances[0].opts).toBe(false);
+		expect('crossOrigin' in instances[0].opts).toBe(false);
 	});
 
 	it('forwards explicit boolean props (including false)', async () => {

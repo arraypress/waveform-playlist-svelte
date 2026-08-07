@@ -77,6 +77,7 @@
 		// ── Audio source (forwarded to the embedded player) ────────────
 		audioMode,
 		preload,
+		crossOrigin,
 		// ── Waveform visualisation ─────────────────────────────────────
 		waveformStyle,
 		height,
@@ -164,6 +165,7 @@
 		/* Pass-through player options */
 		set('audioMode', audioMode);
 		set('preload', preload);
+		set('crossOrigin', crossOrigin);
 
 		set('waveformStyle', waveformStyle);
 		set('height', height);
