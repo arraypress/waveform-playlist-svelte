@@ -45,6 +45,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   each fell into `...rest`, landed on the host `<div>` as an attribute and
   was never forwarded. They are now destructured and set in the options
   builder (`buttonSize` already was).
+- Changing only `class` no longer strips the playlist's own host classes
+  (`waveform-playlist`, `wp-hero-layout`, `wp-grid-layout`,
+  `wp-density-compact`, `wp-cover-top`, `wp-no-artist`, `wp-minimal`). A
+  class-only change (correctly) doesn't remount, so when Svelte rewrote the
+  `class` attribute those were gone until some other prop changed —
+  hero/grid layouts collapsed and density/artist styling reverted. The host
+  now binds a class value frozen at init (server markup and hydration are
+  unchanged) and later `class` changes are applied with `classList`, adding
+  and removing only the user's tokens. The DOM structure is unchanged — the
+  tracks and the playlist UI still live directly in the one host `<div>`.
+  (Mounting the playlist into an inner element was considered and rejected:
+  it would break `.your-class.waveform-playlist` selectors and push CSS
+  variables set via `style` / `class` onto a parent, where the core's
+  defaults shadow them.)
 
 ### Changed
 

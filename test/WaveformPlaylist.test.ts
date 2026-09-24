@@ -49,9 +49,16 @@ class MockPlaylist {
 		const ui = document.createElement('div');
 		ui.className = 'wp-generated';
 		el.appendChild(ui);
+		/* Layout classes on the host itself (addOwnClass): recorded, skipped
+		 * when the author already set them, removed again by destroy(). */
+		const ownClasses = ['waveform-playlist', ...(opts.layout === 'hero' ? ['wp-hero-layout'] : [])].filter(
+			(c) => !el.classList.contains(c)
+		);
+		el.classList.add(...ownClasses);
 		this.destroy.mockImplementation(() => {
 			lifecycle.push(`destroy:${n}`);
 			ui.remove();
+			el.classList.remove(...ownClasses);
 			trackEls.forEach((t) => (t.style.display = ''));
 		});
 		lifecycle.push(`construct:${n}`);
@@ -354,5 +361,43 @@ describe('WaveformPlaylist (Svelte)', () => {
 		const el = container.querySelector('div.wfp-host') as HTMLDivElement;
 		expect(el.classList.contains('custom')).toBe(true);
 		expect(el.id).toBe('pl-1');
+	});
+
+	/* The playlist adds its layout classes to the host and a class-only
+	 * change doesn't remount — so if Svelte rewrote the `class` attribute,
+	 * nothing would put them back and the layout would break. Through the
+	 * Harness so only `class` is invalidated. */
+	it('keeps the playlist\'s host classes when only class changes', async () => {
+		const { component, container } = render(Harness, {
+			props: { initial: { layout: 'hero', class: 'first' } },
+		});
+		await firstInstance();
+		const el = container.querySelector('div') as HTMLDivElement;
+		expect(el.classList.contains('wp-hero-layout')).toBe(true);
+
+		flushSync(() => component.set('class', 'second'));
+		await new Promise<void>((resolve) => setTimeout(resolve, 50));
+
+		expect(instances).toHaveLength(1); // no remount to paper over it
+		expect(el.className.split(' ').sort()).toEqual(
+			['second', 'waveform-playlist', 'wfp-host', 'wp-hero-layout'].sort()
+		);
+
+		flushSync(() => component.set('class', undefined));
+		expect(el.className.split(' ').sort()).toEqual(['waveform-playlist', 'wfp-host', 'wp-hero-layout'].sort());
+	});
+
+	it('a remount after a class change still carries the current class', async () => {
+		const { component, container } = render(Harness, {
+			props: { initial: { layout: 'hero', class: 'first' } },
+		});
+		await firstInstance();
+		flushSync(() => component.set('class', 'second'));
+		flushSync(() => component.set('layout', 'list'));
+		await vi.waitFor(() => expect(instances.length).toBe(2));
+
+		const el = container.querySelector('div') as HTMLDivElement;
+		expect(instances[1].el).toBe(el);
+		expect(el.className.split(' ').sort()).toEqual(['second', 'waveform-playlist', 'wfp-host'].sort());
 	});
 });
