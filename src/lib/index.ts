@@ -22,6 +22,7 @@
  * ```ts
  * import type {
  *   WaveformPlaylistProps,
+ *   WaveformPlaylistLayoutProps,
  *   WaveformPlaylistCallbacks,
  *   WaveformPlaylistExpose,
  *   WaveformPlaylistTrackInput,
@@ -42,6 +43,7 @@ export { default as WaveformPlaylist } from './WaveformPlaylist.svelte';
 
 export type {
 	WaveformPlaylistProps,
+	WaveformPlaylistLayoutProps,
 	WaveformPlaylistCallbacks,
 	WaveformPlaylistExpose,
 	WaveformPlaylistTrackInput,

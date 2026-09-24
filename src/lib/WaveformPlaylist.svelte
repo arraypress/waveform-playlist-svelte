@@ -79,6 +79,12 @@
 		showChapterMarkers,
 		chapterMarkerColor,
 		showPlayState,
+		showArtist,
+		coverSize,
+		thumbnailSize,
+		density,
+		coverPosition,
+		barPosition,
 		// ── Audio source (forwarded to the embedded player) ────────────
 		// Swallowed, never forwarded: an `'external'` embedded player would
 		// dispatch request-play events nobody answers (1.8.0 ignores it).
@@ -168,6 +174,12 @@
 		set('showChapterMarkers', showChapterMarkers);
 		set('chapterMarkerColor', chapterMarkerColor);
 		set('showPlayState', showPlayState);
+		set('showArtist', showArtist);
+		set('coverSize', coverSize);
+		set('thumbnailSize', thumbnailSize);
+		set('density', density);
+		set('coverPosition', coverPosition);
+		set('barPosition', barPosition);
 
 		/* Pass-through player options (`audioMode` deliberately absent —
 		 * the playlist always owns its audio). */
