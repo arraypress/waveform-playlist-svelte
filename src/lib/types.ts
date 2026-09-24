@@ -130,8 +130,9 @@ export interface WaveformPlaylistTrackInput {
  *      behaviour option from the core `WaveformPlayerOptions`, minus the
  *      per-track content fields (`url`, `title`, `artist`, `artwork`,
  *      `album`, `markers`, `waveform`) which come from `tracks`, the
- *      `style`/`src` aliases, the player's `layout` (overridden above), and
- *      the lifecycle callbacks (covered by {@link WaveformPlaylistCallbacks}).
+ *      `style`/`src` aliases, the player's `layout` (overridden above),
+ *      `audioMode` (the playlist always owns its audio), and the lifecycle
+ *      callbacks (covered by {@link WaveformPlaylistCallbacks}).
  *
  * The Svelte component also accepts `class`, `id`, `style`, and any other
  * element attribute via `HTMLAttributes<HTMLDivElement>` fall-through —
@@ -159,6 +160,7 @@ export interface WaveformPlaylistProps
 			| 'album'
 			| 'markers'
 			| 'waveform'
+			| 'audioMode'
 			| 'onLoad'
 			| 'onPlay'
 			| 'onPause'

@@ -61,7 +61,12 @@
 	};
 	type PlaylistCtor = new (el: HTMLElement, opts: Record<string, unknown>) => PlaylistInstance;
 
-	type Props = WaveformPlaylistProps & WaveformPlaylistCallbacks & HTMLAttributes<HTMLDivElement>;
+	/* `audioMode` is not a prop (the playlist always owns its audio), but
+	 * it is declared `never` here so a stray one is destructured and
+	 * swallowed below instead of landing on the host `<div>` via `...rest`. */
+	type Props = WaveformPlaylistProps &
+		WaveformPlaylistCallbacks &
+		HTMLAttributes<HTMLDivElement> & { audioMode?: never };
 
 	let {
 		// ── Tracks (rendered into [data-track] markup, not options) ────
@@ -75,7 +80,9 @@
 		chapterMarkerColor,
 		showPlayState,
 		// ── Audio source (forwarded to the embedded player) ────────────
-		audioMode,
+		// Swallowed, never forwarded: an `'external'` embedded player would
+		// dispatch request-play events nobody answers (1.8.0 ignores it).
+		audioMode: _audioMode,
 		preload,
 		crossOrigin,
 		// ── Waveform visualisation ─────────────────────────────────────
@@ -162,8 +169,8 @@
 		set('chapterMarkerColor', chapterMarkerColor);
 		set('showPlayState', showPlayState);
 
-		/* Pass-through player options */
-		set('audioMode', audioMode);
+		/* Pass-through player options (`audioMode` deliberately absent —
+		 * the playlist always owns its audio). */
 		set('preload', preload);
 		set('crossOrigin', crossOrigin);
 

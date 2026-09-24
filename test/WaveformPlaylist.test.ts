@@ -103,6 +103,19 @@ describe('WaveformPlaylist (Svelte)', () => {
 		});
 	});
 
+	it('does not forward audioMode (the playlist always owns its audio)', async () => {
+		// An `'external'` player inside a playlist dispatches request-play
+		// events nobody answers; playlist 1.8.0 ignores the option, and the
+		// wrapper no longer accepts or forwards it — nor leaks it onto the DOM.
+		const { container } = render(WaveformPlaylist, {
+			// @ts-expect-error — audioMode is not a playlist prop
+			props: { tracks: tracksA, audioMode: 'external' },
+		});
+		await firstInstance();
+		expect('audioMode' in instances[0].opts).toBe(false);
+		expect(container.querySelector('div.wfp-host')!.hasAttribute('audiomode')).toBe(false);
+	});
+
 	it('omits absent props so the core defaults win', async () => {
 		render(WaveformPlaylist, { props: { tracks: tracksA } });
 		await firstInstance();
