@@ -15,6 +15,6 @@
 		"sourceMap": true,
 		"forceConsistentCasingInFileNames": true
 	},
-	"include": ["src/**/*.ts", "src/**/*.svelte", "test/**/*.ts"],
+	"include": ["src/**/*.ts", "src/**/*.svelte", "test/**/*.ts", "test/**/*.svelte"],
 	"exclude": ["node_modules", "dist"]
 }

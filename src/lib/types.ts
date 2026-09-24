@@ -220,6 +220,8 @@ export interface WaveformPlaylistProps
 			| 'onEnd'
 			| 'onError'
 			| 'onTimeUpdate'
+			| 'onNextTrack'
+			| 'onPreviousTrack'
 		> {
 	/**
 	 * The playlist's tracks. Each is rendered into the `[data-track]`
@@ -233,8 +235,10 @@ export interface WaveformPlaylistProps
 /**
  * Lifecycle callback props, forwarded to the embedded `WaveformPlayer`
  * the playlist drives. Each maps to the core player's same-named option
- * callback. Lowercase to match Svelte's native event-attribute
- * convention (`onclick`, `oninput`, …).
+ * callback, which the playlist (1.8.0+) runs after its own handling
+ * (older playlists overwrote them, so these never fired). Lowercase to
+ * match Svelte's native event-attribute convention (`onclick`, `oninput`,
+ * …).
  *
  * ```svelte
  * <WaveformPlaylist {tracks} onplay={(i) => …} ontimeupdate={(t, d) => …} />
@@ -257,6 +261,10 @@ export interface WaveformPlaylistCallbacks {
 	ontimeupdate?: (currentTime: number, duration: number, instance: WaveformPlayer) => void;
 	/** Fired on audio load / playback error. */
 	onerror?: (error: Error, instance: WaveformPlayer) => void;
+	/** Fired when the Media Session "next track" control is used (the playlist then advances). */
+	onnexttrack?: (instance: WaveformPlayer) => void;
+	/** Fired when the Media Session "previous track" control is used (the playlist then goes back). */
+	onprevioustrack?: (instance: WaveformPlayer) => void;
 }
 
 /**

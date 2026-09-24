@@ -12,6 +12,7 @@
  */
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { render } from '@testing-library/svelte';
+import { flushSync } from 'svelte';
 
 /** Captures every constructed instance so assertions can inspect them. */
 const instances: MockPlaylist[] = [];
@@ -40,6 +41,7 @@ vi.mock('@arraypress/waveform-playlist', () => ({
 }));
 
 import WaveformPlaylist from '../src/lib/WaveformPlaylist.svelte';
+import Harness from './fixtures/Harness.svelte';
 
 const tracksA = [
 	{ url: '/a.mp3', title: 'Track A' },
@@ -191,6 +193,48 @@ describe('WaveformPlaylist (Svelte)', () => {
 		await firstInstance();
 		expect(instances[0].opts.continuous).toBe(false);
 		expect(instances[0].opts.showDuration).toBe(true);
+	});
+
+	/* The playlist (1.8.0+) chains these after its own handling, so each
+	 * reaches the embedded player's same-named callback. */
+	const CALLBACKS = {
+		onload: 'onLoad',
+		onplay: 'onPlay',
+		onpause: 'onPause',
+		onend: 'onEnd',
+		ontimeupdate: 'onTimeUpdate',
+		onerror: 'onError',
+		onnexttrack: 'onNextTrack',
+		onprevioustrack: 'onPreviousTrack',
+	} as const;
+
+	it('forwards every callback prop to the playlist, with the core arguments', async () => {
+		const handlers = Object.fromEntries(Object.keys(CALLBACKS).map((prop) => [prop, vi.fn()]));
+		render(WaveformPlaylist, { props: { tracks: tracksA, ...handlers } });
+		await firstInstance();
+
+		for (const [prop, option] of Object.entries(CALLBACKS)) {
+			const fn = instances[0].opts[option];
+			expect(typeof fn, option).toBe('function');
+			(fn as (...a: unknown[]) => void)('a', 'b', 'c');
+			expect(handlers[prop], prop).toHaveBeenCalledWith('a', 'b', 'c');
+		}
+	});
+
+	it('reaches the latest handler without re-mounting when a callback changes', async () => {
+		const first = vi.fn();
+		const second = vi.fn();
+		const { component } = render(Harness, { props: { initial: { onplay: first } } });
+		await firstInstance();
+
+		(component as unknown as { set: (k: string, v: unknown) => void }).set('onplay', second);
+		flushSync();
+		await new Promise<void>((resolve) => setTimeout(resolve, 50));
+		expect(instances).toHaveLength(1);
+
+		(instances[0].opts.onPlay as (p: unknown) => void)('player');
+		expect(first).not.toHaveBeenCalled();
+		expect(second).toHaveBeenCalledWith('player');
 	});
 
 	it('destroys the instance on unmount', async () => {

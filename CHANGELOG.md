@@ -20,9 +20,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `WaveformPlaylistLayoutProps`. Types come from the playlist core's
   `index.d.ts` (1.8.0 declares them all); against an older core they fall
   back to the same 1.8.0 shapes instead of degrading to `unknown`.
+- `onnexttrack` / `onprevioustrack` callback props (Media Session
+  next/previous), forwarded like the other callbacks. The camelCase
+  `onNextTrack` / `onPreviousTrack` the props type used to inherit are
+  removed: they were never destructured, so they fell into `...rest`.
 
 ### Fixed
 
+- `onload`, `onplay`, `onpause`, `onend`, `ontimeupdate` and `onerror`
+  fire. They were wired correctly, but the playlist overwrote the
+  embedded player's callbacks with its own, so they never ran;
+  `@arraypress/waveform-playlist@1.8.0` chains them after its own
+  handling. Every argument the core passes now reaches the handler, and
+  a new handler still never re-mounts the playlist (now tested with a
+  harness that updates one prop at a time).
 - `waveformGradient`, `seekHandle`, `buttonRadius` and `artworkPosition`
   reach the embedded player. All four are core player options the props
   type inherited, but they were never destructured from `$props()`, so

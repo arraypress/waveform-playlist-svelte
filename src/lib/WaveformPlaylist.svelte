@@ -40,7 +40,6 @@
 -->
 <script lang="ts">
 	import type { HTMLAttributes } from 'svelte/elements';
-	import type { WaveformPlayer as WaveformPlayerInstance } from '@arraypress/waveform-player';
 	import type { WaveformPlaylist as WaveformPlaylistInstance } from '@arraypress/waveform-playlist';
 	import type {
 		WaveformPlaylistCallbacks,
@@ -148,6 +147,8 @@
 		onend,
 		ontimeupdate,
 		onerror,
+		onnexttrack,
+		onprevioustrack,
 		// ── Host element ───────────────────────────────────────────────
 		class: className = '',
 		...rest
@@ -243,6 +244,14 @@
 		return opts;
 	}
 
+	/**
+	 * A stable callback for the playlist that calls whatever handler `get`
+	 * returns at call time, with every argument the core passes.
+	 */
+	function forward(get: () => ((...args: never[]) => void) | undefined) {
+		return (...args: unknown[]) => (get() as ((...a: unknown[]) => void) | undefined)?.(...args);
+	}
+
 	function teardown() {
 		if (instance && typeof instance.destroy === 'function') {
 			try {
@@ -269,16 +278,18 @@
 					return;
 				}
 
-				/* Wire callbacks. The playlist forwards unknown options
-				 * straight to the embedded player, so these reach its
-				 * lifecycle hooks. The lowercase props are reactive, so the
-				 * closures always reach the latest handler without a remount. */
-				opts.onLoad = (i: WaveformPlayerInstance) => onload?.(i);
-				opts.onPlay = (i: WaveformPlayerInstance) => onplay?.(i);
-				opts.onPause = (i: WaveformPlayerInstance) => onpause?.(i);
-				opts.onEnd = (i: WaveformPlayerInstance) => onend?.(i);
-				opts.onTimeUpdate = (c: number, d: number, i: WaveformPlayerInstance) => ontimeupdate?.(c, d, i);
-				opts.onError = (e: Error, i: WaveformPlayerInstance) => onerror?.(e, i);
+				/* Wire callbacks. The playlist (1.8.0+) runs each after its own
+				 * handling, passing the core's arguments through. The lowercase
+				 * props are reactive and read at call time, so the closures
+				 * always reach the latest handler without a remount. */
+				opts.onLoad = forward(() => onload);
+				opts.onPlay = forward(() => onplay);
+				opts.onPause = forward(() => onpause);
+				opts.onEnd = forward(() => onend);
+				opts.onTimeUpdate = forward(() => ontimeupdate);
+				opts.onError = forward(() => onerror);
+				opts.onNextTrack = forward(() => onnexttrack);
+				opts.onPreviousTrack = forward(() => onprevioustrack);
 
 				try {
 					instance = new Ctor(container, opts);
