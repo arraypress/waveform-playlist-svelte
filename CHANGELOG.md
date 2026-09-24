@@ -24,6 +24,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   next/previous), forwarded like the other callbacks. The camelCase
   `onNextTrack` / `onPreviousTrack` the props type used to inherit are
   removed: they were never destructured, so they fell into `...rest`.
+- Per-track `waveform` peaks on `WaveformPlaylistTrackInput`
+  (`number[] | string`), rendered as the track's `data-waveform`: an array
+  is JSON-encoded, a string (e.g. a `.json` peaks URL) passed through.
+  With peaks the player skips decoding that track's audio. Playlist 1.8.0
+  is the first version that reads `data-waveform`.
 
 ### Fixed
 

@@ -363,6 +363,7 @@
 			data-album={track.album}
 			data-duration={track.duration}
 			data-markers={track.markers ? JSON.stringify(track.markers) : undefined}
+			data-waveform={Array.isArray(track.waveform) ? JSON.stringify(track.waveform) : track.waveform}
 		>
 			{#each track.chapters ?? [] as chapter, ci (ci)}
 				<div data-chapter="" data-time={String(chapter.time)} data-color={chapter.color}>
