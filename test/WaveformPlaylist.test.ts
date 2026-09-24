@@ -132,6 +132,33 @@ describe('WaveformPlaylist (Svelte)', () => {
 		expect(host.hasAttribute('coversize')).toBe(false);
 	});
 
+	it('forwards waveformGradient, seekHandle, buttonSize, buttonRadius, artworkPosition', async () => {
+		const { container } = render(WaveformPlaylist, {
+			props: {
+				tracks: tracksA,
+				waveformGradient: 'diagonal',
+				seekHandle: true,
+				buttonSize: '4rem',
+				buttonRadius: 0,
+				artworkPosition: 'button',
+			},
+		});
+		await firstInstance();
+		expect(instances[0].opts).toMatchObject({
+			waveformGradient: 'diagonal',
+			seekHandle: true,
+			buttonSize: '4rem',
+			// 0 is a real value (a square button), not "unset".
+			buttonRadius: 0,
+			artworkPosition: 'button',
+		});
+		// An undestructured prop falls into ...rest and lands on the host.
+		const host = container.querySelector('div.wfp-host')!;
+		for (const attr of ['waveformgradient', 'seekhandle', 'buttonradius', 'artworkposition']) {
+			expect(host.hasAttribute(attr), attr).toBe(false);
+		}
+	});
+
 	it('accepts layout="hero"', async () => {
 		render(WaveformPlaylist, { props: { tracks: tracksA, layout: 'hero' } });
 		await firstInstance();

@@ -98,6 +98,8 @@
 		barWidth,
 		barSpacing,
 		barRadius,
+		waveformGradient,
+		seekHandle,
 		// ── Colours ────────────────────────────────────────────────────
 		colorPreset,
 		waveformColor,
@@ -116,6 +118,8 @@
 		buttonAlign,
 		buttonStyle,
 		buttonSize,
+		buttonRadius,
+		artworkPosition,
 		// ── Accessibility ──────────────────────────────────────────────
 		accessibleSeek,
 		seekLabel,
@@ -192,6 +196,8 @@
 		set('barWidth', barWidth);
 		set('barSpacing', barSpacing);
 		set('barRadius', barRadius);
+		set('waveformGradient', waveformGradient);
+		set('seekHandle', seekHandle);
 
 		set('colorPreset', colorPreset);
 		set('waveformColor', waveformColor);
@@ -210,6 +216,8 @@
 		set('buttonAlign', buttonAlign);
 		set('buttonStyle', buttonStyle);
 		set('buttonSize', buttonSize);
+		set('buttonRadius', buttonRadius);
+		set('artworkPosition', artworkPosition);
 
 		set('accessibleSeek', accessibleSeek);
 		set('seekLabel', seekLabel);

@@ -21,6 +21,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `index.d.ts` (1.8.0 declares them all); against an older core they fall
   back to the same 1.8.0 shapes instead of degrading to `unknown`.
 
+### Fixed
+
+- `waveformGradient`, `seekHandle`, `buttonRadius` and `artworkPosition`
+  reach the embedded player. All four are core player options the props
+  type inherited, but they were never destructured from `$props()`, so
+  each fell into `...rest`, landed on the host `<div>` as an attribute and
+  was never forwarded. They are now destructured and set in the options
+  builder (`buttonSize` already was).
+
 ### Removed
 
 - The `audioMode` prop. The playlist always owns its audio, and an
